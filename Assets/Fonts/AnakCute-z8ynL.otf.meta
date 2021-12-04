@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 1987a033d004a89418243cde0cfe58d0
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - a Anak Cute
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: d245f2eb3c9529b4fafe20b6926877b9, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

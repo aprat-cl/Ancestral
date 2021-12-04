@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: a774886eb749e9d45af7789c9699ff7c
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - a Arang
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: f29b3ff18be87d84cb026dd426dc5346, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
