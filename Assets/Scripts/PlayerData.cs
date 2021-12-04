@@ -16,6 +16,7 @@ public class PlayerData
     public static Weapon weapon;
     public static string PlayerModelName;
     public static bool LoadSaveData = false;
+    public static Hashtable Bag;
     
 
 }

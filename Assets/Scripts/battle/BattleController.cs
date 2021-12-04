@@ -120,6 +120,10 @@ public class BattleController : MonoBehaviour
                         StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
                         StartCoroutine(CheckBattleEnded());
                     }
+                    else
+                    {
+                        StartCoroutine(AnimateLackMana(2f, manaBar));
+                    }
                 }
                 else if (Input.GetButton("Fire2"))
                 {
@@ -133,6 +137,10 @@ public class BattleController : MonoBehaviour
                         }
                         StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
                         StartCoroutine(CheckBattleEnded());
+                    }
+                    else
+                    {
+                        StartCoroutine(AnimateLackMana(2f, manaBar));
                     }
                 }
                 else if (Input.GetButton("Fire3"))
@@ -275,6 +283,7 @@ public class BattleController : MonoBehaviour
             if (ec.Damage >= ec.Health)
             {
                 ec.Damage = ec.Health;
+                PlayerData.Gold += ec.Experience;
                 //Death
                 panel.SetActive(false);
                 Destroy(enemy);
@@ -481,6 +490,7 @@ public class BattleController : MonoBehaviour
         ec.Health = GetHealthByLevel(PlayerData.Level, PlayerData.CurrentRoom.type, size);        
         ec.Experience = GetExperience(PlayerData.Level, PlayerData.CurrentRoom.type, size);
         ec.AttSpeed = GetSpeedByLevel(PlayerData.Level, PlayerData.CurrentRoom.type, size);
+        ec.ItemHeld = GetItemByLevel(PlayerData.Level, PlayerData.CurrentRoom.type, size);
         ec.AttackPow1 = GetPow1Bylevel(PlayerData.Level, PlayerData.CurrentRoom.type, size, ec.AttSpeed, out AttackType type1, out float Acc1);
         ec.AttackPow2 = GetPow2Bylevel(PlayerData.Level, PlayerData.CurrentRoom.type, size, ec.AttSpeed, out AttackType type2, out float Acc2);
         ec.Special = GetSpecialBylevel(PlayerData.Level, PlayerData.CurrentRoom.type, size, ec.AttSpeed, out AttackType typeS, out float AccS);
@@ -512,6 +522,276 @@ public class BattleController : MonoBehaviour
         return enemyModel;
     }
 
+    private ItemCodes GetItemByLevel(float level, RoomType type, EnemySize size)
+    {
+        ItemCodes SelItem = ItemCodes.None;
+        List<ItemCodes> itemCodes = new List<ItemCodes>();
+        
+        switch (type)
+        {
+            case RoomType.Initial:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.TinChip);
+                break;
+            case RoomType.None:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.None);
+                break;
+            case RoomType.Cave:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.TinChip);
+                break;
+            case RoomType.Praire:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.WoodChip);                
+                break;
+            case RoomType.Mountains:
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.IronChip);
+                itemCodes.Add(ItemCodes.CopperChip);
+                break;
+            case RoomType.Sky:
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.CopperChip);
+                itemCodes.Add(ItemCodes.SteelChip);
+                itemCodes.Add(ItemCodes.EmeraldChip);
+                break;
+            case RoomType.Beach:
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.Shell);
+                itemCodes.Add(ItemCodes.SteelChip);
+                itemCodes.Add(ItemCodes.SilverChip);
+                break;
+            case RoomType.Hellish:
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.Shell);                
+                itemCodes.Add(ItemCodes.SilverChip);
+                itemCodes.Add(ItemCodes.HellChip);
+                break;
+            case RoomType.Lava:
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.HellChip);
+                itemCodes.Add(ItemCodes.GoldChip);
+                break;
+            case RoomType.Underwater:
+                itemCodes.Add(ItemCodes.WoodChip);
+                itemCodes.Add(ItemCodes.Shell);
+                itemCodes.Add(ItemCodes.LapisChip);
+                itemCodes.Add(ItemCodes.SaphireChip);
+                break;
+            case RoomType.Void:
+                itemCodes.Add(ItemCodes.SilverChip);
+                itemCodes.Add(ItemCodes.GoldChip);
+                itemCodes.Add(ItemCodes.OricalcumChip);
+                itemCodes.Add(ItemCodes.MithrilChip);
+                break;
+            case RoomType.Light:
+                itemCodes.Add(ItemCodes.MithrilChip);
+                itemCodes.Add(ItemCodes.SkyChip);
+                itemCodes.Add(ItemCodes.DarkChip);
+                itemCodes.Add(ItemCodes.OmniChip);
+                break;
+        }
+        switch (size)
+        {
+            case EnemySize.Tiny:
+                {
+                    float chance = Random.Range(0f, 1f);
+                    float quality = Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.01)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.03)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.08)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.16)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.35)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            case EnemySize.Small:
+                {
+                    float chance = Random.Range(0f, 1f);
+                    float quality = Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.02)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.06)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.125)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.25)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.40)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            case EnemySize.Medium:
+                {
+                    float chance = Random.Range(0f, 1f);
+                    float quality = Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.03)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.08)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.16)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.30)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.55)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            case EnemySize.Large:
+                {
+                    float chance = Random.Range(0f, 1f);
+                    float quality = Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.045)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.10)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.20)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.40)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.60)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            case EnemySize.Boss:
+                {
+                    float chance = Random.Range(0f, 1f);
+                    float quality = Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.06)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.125)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.25)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.50)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.70)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+        }
+        return SelItem;
+    }
+    public ItemCodes GetByQuality(ItemCodes code, ItemQuality quality)
+    {
+        ItemCodes item = code;
+        switch (code)
+        {
+            case ItemCodes.None:
+                item = ItemCodes.None;
+                break;
+            case ItemCodes.Stone:
+                item = quality > ItemQuality.Special? ItemCodes.Flint: ItemCodes.Stone;
+                break;
+            case ItemCodes.Bone:
+                item = quality > ItemQuality.Special ? ItemCodes.Shell : ItemCodes.Bone;
+                break;
+            default:
+                item = quality > ItemQuality.Special ? (ItemCodes)(((int)code) + 20) : code;
+                break;
+        }
+        return item;
+    }
     private float GetSpeedByLevel(float level, RoomType type, EnemySize size)
     {
         float BaseSpeed = 5, MultiplySpeed = 1;

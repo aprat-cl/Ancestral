@@ -12,6 +12,7 @@ public class EnemyController : MonoBehaviour
     public int Experience;
     public float rotationSpeed, Accuracy;
     public string MonsterName;
+    public ItemCodes ItemHeld = ItemCodes.None;
     public Texture Icon;
     void Start()
     {

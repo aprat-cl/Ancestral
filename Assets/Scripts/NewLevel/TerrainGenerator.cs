@@ -51,6 +51,8 @@ public class TerrainGenerator : MonoBehaviour
             PlayerData.CurrRoomSpec.StairDownLocation = new Vector2(-1, -1);
             PlayerData.CurrRoomSpec.StairUpLocation = new Vector2(UnityEngine.Random.Range(0, LevelWidth + 1), UnityEngine.Random.Range(0, LevelHeight + 1));
 
+            PlayerData.Bag = new Hashtable();
+
             Debug.Log("Creating new Floor!");
             StartCoroutine(ExecuteCreation(1f));
         }
