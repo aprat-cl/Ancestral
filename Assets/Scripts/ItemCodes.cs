@@ -49,7 +49,8 @@ public enum ItemCodes
     SkyIngot,
     DarkIngot,
     LightIngot, 
-    OmniIngot
+    OmniIngot,
+    TopCount
 
 }
 public enum ItemQuality
@@ -59,6 +60,22 @@ public enum ItemQuality
     Rare,
     Special,
     Legendary
+}
+
+public class ItemData
+{
+    ItemCodes Code;
+    string IconName;
+    string Name;
+    float Value;
+
+    public ItemData(ItemCodes code, string iconName, string name, float value)
+    {
+        this.Code = code;
+        this.IconName = iconName;
+        this.Name = name;
+        this.Value = value;
+    }
 }
 
 

@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     bool bAllowJump, bAllowMove, bIsDashing, bStartHealing;
     float TimeForBattle, ActualTFB;
-    public GameObject PlayerPanel, MainMenu;
+    public GameObject PlayerPanel, MainMenu, GoldText, HealthText, ManaText;
 
     private PlayerControls playerControls;
 
@@ -95,6 +95,7 @@ public class PlayerController : MonoBehaviour
             }
 
         }
+        GoldText.GetComponent<Text>().text = Mathf.RoundToInt(PlayerData.Gold).ToString() + "G";
         if (playerControls.Ground.Menu.triggered)
         {
             if (!MainMenu.activeSelf)
@@ -121,8 +122,8 @@ public class PlayerController : MonoBehaviour
 
     private void UpdatePlayerInfo()
     {
-        GameObject healthBar = PlayerPanel.transform.Find("Health").gameObject;
-        GameObject manaBar = PlayerPanel.transform.Find("Mana").gameObject;
+        GameObject healthBar = HealthText.transform.Find("Health").gameObject;
+        GameObject manaBar = ManaText.transform.Find("Mana").gameObject;
 
         GameObject dmgBar = healthBar.transform.Find("Damage").gameObject;
         GameObject usageBar = manaBar.transform.Find("Usage").gameObject;

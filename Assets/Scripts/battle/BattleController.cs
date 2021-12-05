@@ -16,10 +16,12 @@ public class BattleController : MonoBehaviour
     Hashtable enemyNames = new Hashtable();
     int EnemySelected = 0;
     bool bAllowMove = true, bAllowAttack = true, bBattleEnded = false;
-    public GameObject PlayerPanel;
+    public GameObject PlayerPanel, ItemsPanel, GoldText;
     float CurrTimePlayerAtt = 0;
     // Start is called before the first frame update
     private PlayerControls playerControls;
+    private float goldEarn;
+    List<ItemCodes> itemEarn;
 
     private void Awake()
     {
@@ -299,14 +301,19 @@ public class BattleController : MonoBehaviour
             {
                 ec.Damage = ec.Health;
                 PlayerData.Gold += ec.Experience;
-                if(PlayerData.Bag.ContainsKey(ec.ItemHeld))
+                goldEarn += ec.Experience;
+                if (ec.ItemHeld != ItemCodes.None)
                 {
-                    int cant = (int)PlayerData.Bag[ec.ItemHeld];
-                    PlayerData.Bag[ec.ItemHeld] = cant + 1;
-                }
-                else
-                {
-                    PlayerData.Bag.Add(ec.ItemHeld, 1);
+                    itemEarn.Add(ec.ItemHeld);
+                    if (PlayerData.Bag.ContainsKey(ec.ItemHeld))
+                    {
+                        int cant = (int)PlayerData.Bag[ec.ItemHeld];
+                        PlayerData.Bag[ec.ItemHeld] = cant + 1;
+                    }
+                    else
+                    {
+                        PlayerData.Bag.Add(ec.ItemHeld, 1);
+                    }
                 }
                 //Death
                 panel.SetActive(false);
@@ -363,12 +370,33 @@ public class BattleController : MonoBehaviour
         if (AllEnemyDead)
         {
             bBattleEnded = true;
-            transform.Find("BattleCover").GetComponent<Canvas>().gameObject.transform.Find("Text").GetComponent<Text>().text = "Congratulations!";
+            int cont = 1;
+            foreach (ItemCodes item in itemEarn)
+            {
+                GameObject panel = ItemsPanel.transform.Find("ItemPanel" + cont).gameObject;
+                GameObject icon = panel.transform.Find("Icon").gameObject;
+                GameObject text = panel.transform.Find("Text").gameObject;
+
+                icon.GetComponent<RawImage>().texture = GetItemIcon(item);
+                text.GetComponent<Text>().text = GetItemName(item);
+            }
+            transform.Find("BattleCover").GetComponent<Canvas>().gameObject.transform.Find("Text").GetComponent<Text>().text = "Battle Resolved!";
             transform.Find("BattleCover").GetComponent<Canvas>().gameObject.SetActive(true);
             StartCoroutine(CloseAfter(5f));
         }
 
     }
+
+    private string GetItemName(ItemCodes item)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    private Texture GetItemIcon(ItemCodes item)
+    {
+        throw new System.NotImplementedException();
+    }
+
     IEnumerator AllowAttackAfter(float time)
     {
         yield return new WaitForSeconds(time);

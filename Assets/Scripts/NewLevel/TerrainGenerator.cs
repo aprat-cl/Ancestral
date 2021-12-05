@@ -22,6 +22,7 @@ public class TerrainGenerator : MonoBehaviour
 
     void Start()
     {
+        fillItemData();
         if (PlayerData.CurrRoomSpec == null)
         {
             LoadingScr.GetComponent<Canvas>().enabled = true;
@@ -62,6 +63,57 @@ public class TerrainGenerator : MonoBehaviour
             Debug.Log("Loading Floor!");
             StartCoroutine(ExecuteLoadLayout(1f));
         }        
+    }
+
+    private void fillItemData()
+    {
+        PlayerData.ItemCollection.Add(ItemCodes.None, new ItemData(ItemCodes.None, "None", "None", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.Stone, new ItemData(ItemCodes.Stone, "Stone", "Stone", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.Flint, new ItemData(ItemCodes.Flint, "Flint", "Flint", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.Bone, new ItemData(ItemCodes.Bone, "Bone", "Bone", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.Shell, new ItemData(ItemCodes.Shell, "Shell", "Shell", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.Junk, new ItemData(ItemCodes.Junk, "Junk", "Junk", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.WoodChip, new ItemData(ItemCodes.WoodChip, "WoodChip", "Wood Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.TinChip, new ItemData(ItemCodes.TinChip, "TinChip", "Tin Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.IronChip, new ItemData(ItemCodes.IronChip, "IronChip", "Iron Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.CopperChip, new ItemData(ItemCodes.CopperChip, "CopperChip", "Copper Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SteelChip, new ItemData(ItemCodes.SteelChip, "SteelChip", "Steel Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SilverChip, new ItemData(ItemCodes.SilverChip, "SilverChip", "Silver Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.GoldChip, new ItemData(ItemCodes.GoldChip, "GoldChip", "Gold Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.LapisChip, new ItemData(ItemCodes.LapisChip, "LapisChip", "Lapis Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SaphireChip, new ItemData(ItemCodes.SaphireChip, "SaphireChip", "Saphire Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.EmeraldChip, new ItemData(ItemCodes.EmeraldChip, "EmeraldChip", "Emerald Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.RubyChip, new ItemData(ItemCodes.RubyChip, "RubyChip", "Ruby Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.CrystalChip, new ItemData(ItemCodes.CrystalChip, "CrystalChip", "Crystal Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.DiamondChip, new ItemData(ItemCodes.DiamondChip, "DiamondChip", "Diamond Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.MithrilChip, new ItemData(ItemCodes.MithrilChip, "MithrilChip", "Mithril Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.OricalcumChip, new ItemData(ItemCodes.OricalcumChip, "OricalcumChip", "Oricalcum Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.HellChip, new ItemData(ItemCodes.HellChip, "HellChip", "HellStone Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SkyChip, new ItemData(ItemCodes.SkyChip, "SkyChip", "SkyPiece Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.DarkChip, new ItemData(ItemCodes.DarkChip, "DarkChip", "Dark Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.LightChip, new ItemData(ItemCodes.LightChip, "LightChip", "Light Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.OmniChip, new ItemData(ItemCodes.OmniChip, "OmniChip", "Omni Chip", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.Lumber, new ItemData(ItemCodes.Lumber, "Lumber", "Lumber", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.TinIngot, new ItemData(ItemCodes.TinIngot, "TinIngot", "Tin Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.IronIngot, new ItemData(ItemCodes.IronIngot, "IronIngot", "Iron Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.CopperIngot, new ItemData(ItemCodes.CopperIngot, "CopperIngot", "Copper Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SteelIngot, new ItemData(ItemCodes.SteelIngot, "SteelIngot", "Steel Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SilverIngot, new ItemData(ItemCodes.SilverIngot, "SilverIngot", "Silver Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.GoldIngot, new ItemData(ItemCodes.GoldIngot, "GoldIngot", "Gold Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.LapisIngot, new ItemData(ItemCodes.LapisIngot, "LapisIngot", "Lapis Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SaphireIngot, new ItemData(ItemCodes.SaphireIngot, "SaphireIngot", "Saphire Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.EmeraldIngot, new ItemData(ItemCodes.EmeraldIngot, "EmeraldIngot", "Emerald Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.RubyIngot, new ItemData(ItemCodes.RubyIngot, "RubyIngot", "Ruby Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.CrystalIngot, new ItemData(ItemCodes.CrystalIngot, "CrystalIngot", "Crystal Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.DiamondIngot, new ItemData(ItemCodes.DiamondIngot, "DiamondIngot", "Diamond Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.MithrilIngot, new ItemData(ItemCodes.MithrilIngot, "MithrilIngot", "Mithril Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.OricalcumIngot, new ItemData(ItemCodes.OricalcumIngot, "OricalcumIngot", "Oricalcum Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.HellIngot, new ItemData(ItemCodes.HellIngot, "HellIngot", "HellStone Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.SkyIngot, new ItemData(ItemCodes.SkyIngot, "SkyIngot", "SkyPiece Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.DarkIngot, new ItemData(ItemCodes.DarkIngot, "DarkIngot", "DarkMatter Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.LightIngot, new ItemData(ItemCodes.LightIngot, "LightIngot", "Light Ingot", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.OmniIngot, new ItemData(ItemCodes.OmniIngot, "OmniIngot", "Omni Ingot", 0));
+
     }
 
     private IEnumerator ExecuteLoadLayout(float time)
