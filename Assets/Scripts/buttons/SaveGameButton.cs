@@ -29,7 +29,7 @@ public class SaveGameButton : MonoBehaviour
         string BkpPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\AncestralGame\\SaveData\\save.bak";
         try
         {
-            if(File.Exists(SavePath)) File.Copy(SavePath, BkpPath);
+            if(File.Exists(SavePath)) File.Copy(SavePath, BkpPath, true);
             File.WriteAllText(SavePath, content);
         }
         catch(Exception ex)

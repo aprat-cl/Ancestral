@@ -14,6 +14,7 @@ public class SavePlayerData
     public float Level, Attackpow, Defense, MagicDefense;
     public Weapon weapon;
     public string PlayerModelName;
+    public List<ItemBagSaveData> BagItems;
 
     public SavePlayerData()
     {
@@ -35,6 +36,11 @@ public class SavePlayerData
         MagicDefense = PlayerData.MagicDefense;
         weapon = PlayerData.weapon;
         PlayerModelName = PlayerData.PlayerModelName;
+        foreach (var o in PlayerData.Bag)
+        {
+            BagItems.Add(new ItemBagSaveData() { code = o.Key, count = o.Value });
+        }
+
     }
     public void SetLoadData()
     {
@@ -59,5 +65,12 @@ public class SavePlayerData
         PlayerData.bIsJumping = false;
         PlayerData.SceneLoaded = true;
         PlayerData.LoadSaveData = true;
+        PlayerData.Bag.Clear();
+        foreach(var o in BagItems)
+        {
+            PlayerData.Bag.Add(o.code, o.count);
+        }
     }
+
 }
+

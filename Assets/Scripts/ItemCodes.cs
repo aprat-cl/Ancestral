@@ -64,10 +64,11 @@ public enum ItemQuality
 
 public class ItemData
 {
-    ItemCodes Code;
-    string IconName;
-    string Name;
-    float Value;
+    public ItemCodes Code;
+    public string IconName;
+    public string Name;
+    public float Value;
+    public ItemType type = ItemType.Item;
 
     public ItemData(ItemCodes code, string iconName, string name, float value)
     {
@@ -76,6 +77,19 @@ public class ItemData
         this.Name = name;
         this.Value = value;
     }
+}
+public enum ItemType
+{
+    Valuable,
+    Item,
+    Weapon,
+    Key
+}
+public class ItemBagSaveData
+{
+    public ItemCodes code;
+    public int count;
+
 }
 
 

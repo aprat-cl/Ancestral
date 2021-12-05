@@ -26,6 +26,7 @@ public class BattleController : MonoBehaviour
     private void Awake()
     {
         playerControls = new PlayerControls();
+        itemEarn = new List<ItemCodes>();
     }
     private void OnEnable()
     {
@@ -307,7 +308,7 @@ public class BattleController : MonoBehaviour
                     itemEarn.Add(ec.ItemHeld);
                     if (PlayerData.Bag.ContainsKey(ec.ItemHeld))
                     {
-                        int cant = (int)PlayerData.Bag[ec.ItemHeld];
+                        int cant = PlayerData.Bag[ec.ItemHeld];
                         PlayerData.Bag[ec.ItemHeld] = cant + 1;
                     }
                     else
@@ -374,12 +375,14 @@ public class BattleController : MonoBehaviour
             foreach (ItemCodes item in itemEarn)
             {
                 GameObject panel = ItemsPanel.transform.Find("ItemPanel" + cont).gameObject;
+                panel.SetActive(true);
                 GameObject icon = panel.transform.Find("Icon").gameObject;
-                GameObject text = panel.transform.Find("Text").gameObject;
+                GameObject text = icon.transform.Find("Text").gameObject;
 
                 icon.GetComponent<RawImage>().texture = GetItemIcon(item);
                 text.GetComponent<Text>().text = GetItemName(item);
             }
+            GoldText.GetComponent<Text>().text = string.Format("{0} gold earned", Mathf.RoundToInt(goldEarn).ToString()) ;
             transform.Find("BattleCover").GetComponent<Canvas>().gameObject.transform.Find("Text").GetComponent<Text>().text = "Battle Resolved!";
             transform.Find("BattleCover").GetComponent<Canvas>().gameObject.SetActive(true);
             StartCoroutine(CloseAfter(5f));
@@ -389,12 +392,25 @@ public class BattleController : MonoBehaviour
 
     private string GetItemName(ItemCodes item)
     {
-        throw new System.NotImplementedException();
+        if (PlayerData.ItemCollection.ContainsKey(item))
+        {
+            string Name = (PlayerData.ItemCollection[item]).Name;
+
+            return Name;
+        }
+        else return "item";
     }
 
     private Texture GetItemIcon(ItemCodes item)
     {
-        throw new System.NotImplementedException();
+        if (PlayerData.ItemCollection.ContainsKey(item))
+        {
+            string Name = (PlayerData.ItemCollection[item]).IconName;
+
+            Texture texture = LoadPNG(string.Format(@".\Assets\Sprites\items\{0}.png", Name));
+            return texture;
+        }
+        else return new Texture2D(80, 80);
     }
 
     IEnumerator AllowAttackAfter(float time)
