@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,6 +16,23 @@ public class PlayerController : MonoBehaviour
     bool bAllowJump, bAllowMove, bIsDashing, bStartHealing;
     float TimeForBattle, ActualTFB;
     public GameObject PlayerPanel, MainMenu;
+
+    private PlayerControls playerControls;
+
+    private void Awake()
+    {
+        playerControls = new PlayerControls();
+    }
+
+    private void OnEnable()
+    {
+        playerControls.Enable();
+    }
+    private void OnDisable()
+    {
+        playerControls.Disable();
+    }
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -22,7 +40,27 @@ public class PlayerController : MonoBehaviour
         bAllowMove = true;
         TimeForBattle = UnityEngine.Random.Range(10f, 20f);
         ActualTFB = 0f;
+        playerControls.Ground.Jump.performed += onJumpEvent;
         PlayerData.parentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+    }
+
+    private void onJumpEvent(InputAction.CallbackContext obj)
+    {
+        if (transform.position.y < 0.5f)
+        {
+            if (playerControls.Ground.Jump.triggered && bAllowJump)
+            {
+                bAllowJump = false;
+                bAllowMove = false;
+                bIsDashing = true;
+                rb.AddForce(direction * JumpForce, ForceMode.VelocityChange);
+                //rb.detectCollisions = false;
+
+                StartCoroutine(StopJumpAfter(0.2f));
+                StartCoroutine(EnableJumpAfter(0.5f));
+                StartCoroutine(EnableMoveAfter(0.2f));
+            }
+        }
     }
 
     // Update is called once per frame
@@ -33,8 +71,8 @@ public class PlayerController : MonoBehaviour
             SceneManager.LoadScene(PlayerData.parentScene);
             return;
         }
-        float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
+        float moveX = playerControls.Ground.Move.ReadValue<Vector2>().x;
+        float moveY = playerControls.Ground.Move.ReadValue<Vector2>().y;
         if (bAllowMove)
         {            
             PlayerData.MapLocX = gameObject.transform.position.x;
@@ -57,7 +95,7 @@ public class PlayerController : MonoBehaviour
             }
 
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (playerControls.Ground.Menu.triggered)
         {
             if (!MainMenu.activeSelf)
                 MainMenu.SetActive(true);
@@ -74,6 +112,7 @@ public class PlayerController : MonoBehaviour
                 PlayerData.PlayerDamage -= Time.deltaTime * unitHHeal;
         }
         UpdatePlayerInfo();
+
         //Vector3 direction = new Vector3(moveX, 0f, moveY);
         //transform.Translate(direction * Velocity * Time.deltaTime);
         //Rigidbody rb = GetComponent<Rigidbody>();
@@ -126,21 +165,7 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (transform.position.y < 0.5f)
-        {
-            if (Input.GetButton("Jump") && bAllowJump)
-            {
-                bAllowJump = false;
-                bAllowMove = false;
-                bIsDashing = true;
-                rb.AddForce(direction * JumpForce, ForceMode.VelocityChange);
-                //rb.detectCollisions = false;
-
-                StartCoroutine(StopJumpAfter(0.2f));
-                StartCoroutine(EnableJumpAfter(0.5f));
-                StartCoroutine(EnableMoveAfter(0.2f));
-            }
-        }
+        
     }    
 
     IEnumerator EnableJumpAfter(float seconds)

@@ -19,6 +19,21 @@ public class BattleController : MonoBehaviour
     public GameObject PlayerPanel;
     float CurrTimePlayerAtt = 0;
     // Start is called before the first frame update
+    private PlayerControls playerControls;
+
+    private void Awake()
+    {
+        playerControls = new PlayerControls();
+    }
+    private void OnEnable()
+    {
+        playerControls.Enable();
+    }
+    private void OnDisable()
+    {
+        playerControls.Disable();
+    }
+
     void Start()
     {
         bBattleEnded = false;
@@ -48,7 +63,7 @@ public class BattleController : MonoBehaviour
         
         if (!bBattleEnded)
         {
-            if (Input.GetAxis("Vertical") > 0.5 && bAllowMove)
+            if (playerControls.Battle.Select.ReadValue<Vector2>().y > 0.5 && bAllowMove)
             {
                 bAllowMove = false;
                 bChanged = true;
@@ -67,7 +82,7 @@ public class BattleController : MonoBehaviour
                 }
                 StartCoroutine(AllowMoveAfter(0.33f));
             }
-            else if (Input.GetAxis("Vertical") < -0.5 && bAllowMove)
+            else if (playerControls.Battle.Select.ReadValue<Vector2>().y < -0.5 && bAllowMove)
             {
                 bAllowMove = false;
                 bChanged = true;
@@ -107,7 +122,7 @@ public class BattleController : MonoBehaviour
             {
                 timeBar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 0f);
                 CurrTimePlayerAtt = 0;
-                if (Input.GetButton("Fire1"))
+                if (playerControls.Battle.AttackLight.triggered)
                 {
                     if (PlayerData.PlayerMana - PlayerData.ManaUsage > PlayerData.weapon.Pow1Usage)
                     {
@@ -125,7 +140,7 @@ public class BattleController : MonoBehaviour
                         StartCoroutine(AnimateLackMana(2f, manaBar));
                     }
                 }
-                else if (Input.GetButton("Fire2"))
+                else if (playerControls.Battle.AttackHard.triggered)
                 {
                     //Ranged or Hard
                     if (PlayerData.PlayerMana - PlayerData.ManaUsage > PlayerData.weapon.Pow2Usage)
@@ -143,7 +158,7 @@ public class BattleController : MonoBehaviour
                         StartCoroutine(AnimateLackMana(2f, manaBar));
                     }
                 }
-                else if (Input.GetButton("Fire3"))
+                else if (playerControls.Battle.AttackSpecial.triggered)
                 {
                     if (PlayerData.PlayerMana - PlayerData.ManaUsage > PlayerData.weapon.SpecialManaUsage)
                     {
@@ -284,6 +299,15 @@ public class BattleController : MonoBehaviour
             {
                 ec.Damage = ec.Health;
                 PlayerData.Gold += ec.Experience;
+                if(PlayerData.Bag.ContainsKey(ec.ItemHeld))
+                {
+                    int cant = (int)PlayerData.Bag[ec.ItemHeld];
+                    PlayerData.Bag[ec.ItemHeld] = cant + 1;
+                }
+                else
+                {
+                    PlayerData.Bag.Add(ec.ItemHeld, 1);
+                }
                 //Death
                 panel.SetActive(false);
                 Destroy(enemy);
