@@ -18,11 +18,14 @@ public class TerrainGenerator : MonoBehaviour
     public GameObject Light;
     public RoomType tileType;
     Vector3 StartPos;
+
     
 
     void Start()
     {
         fillItemData();
+        
+
         if (PlayerData.CurrRoomSpec == null)
         {
             LoadingScr.GetComponent<Canvas>().enabled = true;

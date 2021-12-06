@@ -62,6 +62,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""9d1b952c-7576-4853-86ed-40cabc887f65"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -216,6 +225,50 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""402aa6cf-418b-4d4b-a6be-6cb7cbc65265"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1c3de1d8-1a1e-4f0a-a5af-c5875d804145"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d9d1f9b-ee7b-4b72-89fb-8c739c3a3552"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7fbe29f-640c-4c2c-b278-684c0e571ddb"",
+                    ""path"": ""<XInputController>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -467,6 +520,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Ground_Jump = m_Ground.FindAction("Jump", throwIfNotFound: true);
         m_Ground_CameraPan = m_Ground.FindAction("CameraPan", throwIfNotFound: true);
         m_Ground_Menu = m_Ground.FindAction("Menu", throwIfNotFound: true);
+        m_Ground_Action = m_Ground.FindAction("Action", throwIfNotFound: true);
         // Battle
         m_Battle = asset.FindActionMap("Battle", throwIfNotFound: true);
         m_Battle_Select = m_Battle.FindAction("Select", throwIfNotFound: true);
@@ -536,6 +590,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Ground_Jump;
     private readonly InputAction m_Ground_CameraPan;
     private readonly InputAction m_Ground_Menu;
+    private readonly InputAction m_Ground_Action;
     public struct GroundActions
     {
         private @PlayerControls m_Wrapper;
@@ -544,6 +599,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Ground_Jump;
         public InputAction @CameraPan => m_Wrapper.m_Ground_CameraPan;
         public InputAction @Menu => m_Wrapper.m_Ground_Menu;
+        public InputAction @Action => m_Wrapper.m_Ground_Action;
         public InputActionMap Get() { return m_Wrapper.m_Ground; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -565,6 +621,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Menu.started -= m_Wrapper.m_GroundActionsCallbackInterface.OnMenu;
                 @Menu.performed -= m_Wrapper.m_GroundActionsCallbackInterface.OnMenu;
                 @Menu.canceled -= m_Wrapper.m_GroundActionsCallbackInterface.OnMenu;
+                @Action.started -= m_Wrapper.m_GroundActionsCallbackInterface.OnAction;
+                @Action.performed -= m_Wrapper.m_GroundActionsCallbackInterface.OnAction;
+                @Action.canceled -= m_Wrapper.m_GroundActionsCallbackInterface.OnAction;
             }
             m_Wrapper.m_GroundActionsCallbackInterface = instance;
             if (instance != null)
@@ -581,6 +640,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Menu.started += instance.OnMenu;
                 @Menu.performed += instance.OnMenu;
                 @Menu.canceled += instance.OnMenu;
+                @Action.started += instance.OnAction;
+                @Action.performed += instance.OnAction;
+                @Action.canceled += instance.OnAction;
             }
         }
     }
@@ -657,6 +719,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnCameraPan(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnAction(InputAction.CallbackContext context);
     }
     public interface IBattleActions
     {

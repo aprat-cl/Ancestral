@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,9 +14,12 @@ public class PlayerController : MonoBehaviour
     public Text debugText;
     Vector3 direction;
     Rigidbody rb;
-    bool bAllowJump, bAllowMove, bIsDashing, bStartHealing;
+    bool bAllowJump, bAllowMove, bIsDashing, bStartHealing;//, bMenuOpen;
     float TimeForBattle, ActualTFB;
     public GameObject PlayerPanel, MainMenu, GoldText, HealthText, ManaText;
+    public static List<GameObject> menuButtons;
+    public static int SelectedButton = 0;
+    
 
     private PlayerControls playerControls;
 
@@ -35,6 +39,13 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        menuButtons = new List<GameObject>();
+        menuButtons.Add(MainMenu.transform.Find("Panel").transform.Find("SaveBtn").gameObject);
+        menuButtons.Add(MainMenu.transform.Find("Panel").transform.Find("LoadBtn").gameObject);
+        menuButtons.Add(MainMenu.transform.Find("Panel").transform.Find("ExitBtn").gameObject);
+
+        menuButtons[0].GetComponent<Button>().Select();
+
         rb = GetComponent<Rigidbody>();
         bAllowJump = true;
         bAllowMove = true;
@@ -95,13 +106,61 @@ public class PlayerController : MonoBehaviour
             }
 
         }
+        //else if (bMenuOpen)
+        //{
+        //    //GameObject button = menuButtons[SelectedButton];
+        //    //if (bMenuCanMove)
+        //    //{
+        //    //    if (playerControls.Ground.Action.triggered)
+        //    //    {
+        //    //        bMenuCanMove = false;
+        //    //        var eventSystem = EventSystem.current;
+        //    //        ExecuteEvents.Execute(button.gameObject, new BaseEventData(eventSystem), ExecuteEvents.submitHandler);
+        //    //        //StartCoroutine(EnableMenuMove(1f));
+        //    //    }
+        //    //    else if (playerControls.Ground.Move.ReadValue<Vector2>().y > 0.5f)
+        //    //    {
+        //    //        bMenuCanMove = false;
+        //    //        SelectedButton--;
+        //    //        if (SelectedButton < 0) SelectedButton = menuButtons.Count - 1;                   
+                    
+        //    //        //StartCoroutine(EnableMenuMove(1f));
+        //    //    }
+        //    //    else if (playerControls.Ground.Move.ReadValue<Vector2>().y < -0.5f)
+        //    //    {
+        //    //        bMenuCanMove = false;
+        //    //        SelectedButton++;
+        //    //        if (SelectedButton >= menuButtons.Count) SelectedButton = 0;                   
+                    
+        //    //        //StartCoroutine(EnableMenuMove(1f));
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        bMenuCanMove = true;
+        //    //    }
+        //    //    button = menuButtons[SelectedButton];
+        //    //    button.GetComponent<Button>().Select();
+        //    //}
+            
+        //}
         GoldText.GetComponent<Text>().text = Mathf.RoundToInt(PlayerData.Gold).ToString() + "G";
         if (playerControls.Ground.Menu.triggered)
         {
             if (!MainMenu.activeSelf)
+            {
+                menuButtons[0].GetComponent<Button>().Select();
+                //bMenuOpen = true;
+                bAllowMove = false;
+                bAllowJump = false;
                 MainMenu.SetActive(true);
+            }
             else
+            {
+                //bMenuOpen = false;
+                bAllowMove = true;
+                bAllowJump = true;
                 MainMenu.SetActive(false);
+            }
         }
         if (bStartHealing)
         {
@@ -119,6 +178,12 @@ public class PlayerController : MonoBehaviour
         //Rigidbody rb = GetComponent<Rigidbody>();
         //rb.AddForce(direction * Velocity, ForceMode.Acceleration);
     }
+
+    //private IEnumerator EnableMenuMove(float time)
+    //{
+    //    yield return new WaitForSeconds(time);
+    //    bMenuCanMove = true;
+    //}
 
     private void UpdatePlayerInfo()
     {
