@@ -35,22 +35,40 @@ public class TerrainGenerator : MonoBehaviour
         {
             //PlayerData.CurrentRoom = RoomInstance.CreateRoom(0x0, Connector.None);
             //PlayerData.CurrentRoom.type = RoomType.Initial;
-            PlayerData.PlayerModelName = "Player_default";      
+            PlayerData.PlayerModelName = "Player_default";
             PlayerData.Level = 1;
             PlayerData.Attackpow = 1;
             PlayerData.AttSpeed = 5f;
-            PlayerData.Defense = 1;
-            PlayerData.MagicDefense = 1;
+            PlayerData.Defence = 1;
+            PlayerData.MagicDef = 1;
             PlayerData.PlayerMana = 50;
             PlayerData.PlayerHealth = 20;
 
-            PlayerData.weapon = new Weapon();
-            PlayerData.weapon.Power1 = 4;
-            PlayerData.weapon.Power2 = 6;
-            PlayerData.weapon.PowerSpecial = 12;
-            PlayerData.weapon.SpecialManaUsage = 10;
-            PlayerData.weapon.Pow1Usage = 0;
-            PlayerData.weapon.Pow2Usage = 5;
+            PlayerData.weapon = new Weapon()
+            {
+                Code = ItemCodes.Stick,
+                type = WeaponType.Melee,
+                Name = "Wood Stick",
+                Power1 = 4,
+                Power2 = 6,
+                PowerSpecial = 12,
+                SpecialManaUsage = 10,
+                Pow1Usage = 0,
+                Pow2Usage = 5
+            };
+
+            PlayerData.armour = new Armour()
+            {
+                Code = ItemCodes.Shirt,
+                Def = 0,
+                MagDef = 0,
+                Material = ItemCodes.None,
+                Name = "Torn Shirt",
+                type = ArmourType.Normal,
+                ExpBonus = 0,
+                MBonus = 0,
+                PowBonus = 0
+            };
 
             PlayerData.CurrRoomSpec.StairDownLocation = new Vector2(-1, -1);
             PlayerData.CurrRoomSpec.StairUpLocation = new Vector2(UnityEngine.Random.Range(0, LevelWidth + 1), UnityEngine.Random.Range(0, LevelHeight + 1));
@@ -117,6 +135,18 @@ public class TerrainGenerator : MonoBehaviour
         PlayerData.ItemCollection.Add(ItemCodes.DarkIngot, new ItemData(ItemCodes.DarkIngot, "generic", "DarkMatter Ingot", 0));
         PlayerData.ItemCollection.Add(ItemCodes.LightIngot, new ItemData(ItemCodes.LightIngot, "generic", "Light Ingot", 0));
         PlayerData.ItemCollection.Add(ItemCodes.OmniIngot, new ItemData(ItemCodes.OmniIngot, "generic", "Omni Ingot", 0));
+
+        //Weapons Section
+
+        PlayerData.ItemCollection.Add(ItemCodes.Stick, new ItemData(ItemCodes.Stick, "stick", "Wood Stick", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.TinSword, new ItemData(ItemCodes.TinSword, "stick", "Tin Sword", 0));
+
+        //Armour Section
+
+        PlayerData.ItemCollection.Add(ItemCodes.Shirt, new ItemData(ItemCodes.Shirt, "shirt", "Torn Shirt", 0));
+        PlayerData.ItemCollection.Add(ItemCodes.WoodArm, new ItemData(ItemCodes.WoodArm, "shirt", "Wood Armour", 0));
+
+        
 
     }
 
@@ -387,6 +417,10 @@ public class TerrainGenerator : MonoBehaviour
         if (!room.bStartRoom)
         {
             Destroy(instance.transform.Find("Arrival").gameObject);
+        }
+        else
+        {
+            Debug.Log(string.Format("Room ({0}, {1}): Not StartRoom", posX, posY));
         }
         if(Mathf.RoundToInt(PlayerData.CurrRoomSpec.StairUpLocation.x) == posX && Mathf.RoundToInt(PlayerData.CurrRoomSpec.StairUpLocation.y) == posY)
         {

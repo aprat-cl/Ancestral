@@ -236,7 +236,7 @@ public class BattleController : MonoBehaviour
                         }
                         if(chance < att_chance)
                         {//HIT!
-                            float PlayerDef = attackType == AttackType.Mele || attackType == AttackType.Ranged ? PlayerData.Defense : PlayerData.MagicDefense;
+                            float PlayerDef = attackType == AttackType.Mele || attackType == AttackType.Ranged ? PlayerData.Defence : PlayerData.MagicDef;
                             PlayerData.PlayerDamage += att_dmg - ((PlayerDef / 10) * att_dmg);
                         }
                     }

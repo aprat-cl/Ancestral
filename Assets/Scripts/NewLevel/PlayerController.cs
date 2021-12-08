@@ -13,10 +13,11 @@ public class PlayerController : MonoBehaviour
     public float Velocity, JumpForce;
     public Text debugText;
     Vector3 direction;
+    int ItemPage = 0;
     Rigidbody rb;
     bool bAllowJump, bAllowMove, bIsDashing, bStartHealing;//, bMenuOpen;
     float TimeForBattle, ActualTFB;
-    public GameObject PlayerPanel, MainMenu, GoldText, HealthText, ManaText;
+    public GameObject PlayerPanel, MainMenu, GoldText, HealthText, ManaText, Inventory, BagPanel, EquipPanel, StatsLeftPnl, StatsRightPnl;
     public static List<GameObject> menuButtons;
     public static int SelectedButton = 0;
     
@@ -57,7 +58,7 @@ public class PlayerController : MonoBehaviour
 
     private void onJumpEvent(InputAction.CallbackContext obj)
     {
-        if (transform.position.y < 0.5f)
+        if (transform.position.y < 0.5f && bAllowMove && !Inventory.activeSelf && !MainMenu.activeSelf)
         {
             if (playerControls.Ground.Jump.triggered && bAllowJump)
             {
@@ -84,7 +85,7 @@ public class PlayerController : MonoBehaviour
         }
         float moveX = playerControls.Ground.Move.ReadValue<Vector2>().x;
         float moveY = playerControls.Ground.Move.ReadValue<Vector2>().y;
-        if (bAllowMove)
+        if (bAllowMove && !Inventory.activeSelf && !MainMenu.activeSelf)
         {            
             PlayerData.MapLocX = gameObject.transform.position.x;
             PlayerData.MapLocY = gameObject.transform.position.z;
@@ -123,7 +124,7 @@ public class PlayerController : MonoBehaviour
         //    //        bMenuCanMove = false;
         //    //        SelectedButton--;
         //    //        if (SelectedButton < 0) SelectedButton = menuButtons.Count - 1;                   
-                    
+
         //    //        //StartCoroutine(EnableMenuMove(1f));
         //    //    }
         //    //    else if (playerControls.Ground.Move.ReadValue<Vector2>().y < -0.5f)
@@ -131,7 +132,7 @@ public class PlayerController : MonoBehaviour
         //    //        bMenuCanMove = false;
         //    //        SelectedButton++;
         //    //        if (SelectedButton >= menuButtons.Count) SelectedButton = 0;                   
-                    
+
         //    //        //StartCoroutine(EnableMenuMove(1f));
         //    //    }
         //    //    else
@@ -141,7 +142,7 @@ public class PlayerController : MonoBehaviour
         //    //    button = menuButtons[SelectedButton];
         //    //    button.GetComponent<Button>().Select();
         //    //}
-            
+
         //}
         GoldText.GetComponent<Text>().text = Mathf.RoundToInt(PlayerData.Gold).ToString() + "G";
         if (playerControls.Ground.Menu.triggered)
@@ -152,6 +153,7 @@ public class PlayerController : MonoBehaviour
                 //bMenuOpen = true;
                 bAllowMove = false;
                 bAllowJump = false;
+                rb.velocity = Vector3.zero;
                 MainMenu.SetActive(true);
             }
             else
@@ -160,6 +162,27 @@ public class PlayerController : MonoBehaviour
                 bAllowMove = true;
                 bAllowJump = true;
                 MainMenu.SetActive(false);
+            }
+        }
+        if (playerControls.Ground.Inventory.triggered)
+        {
+            if (!Inventory.activeSelf)
+            {                
+                PrepareInventory();
+                PrepareEquip();
+                //bMenuOpen = true;                
+                bAllowMove = false;
+                bAllowJump = false;
+                rb.velocity = Vector3.zero;
+                Inventory.SetActive(true);
+            }
+            else
+            {
+                //bMenuOpen = false;
+                UnloadInventory();
+                bAllowMove = true;
+                bAllowJump = true;
+                Inventory.SetActive(false);
             }
         }
         if (bStartHealing)
@@ -177,6 +200,71 @@ public class PlayerController : MonoBehaviour
         //transform.Translate(direction * Velocity * Time.deltaTime);
         //Rigidbody rb = GetComponent<Rigidbody>();
         //rb.AddForce(direction * Velocity, ForceMode.Acceleration);
+    }
+
+    private void UnloadInventory()
+    {
+        for(int i = 1; i <= 10; i++)
+        {
+            GameObject itemPnl = BagPanel.transform.Find(string.Format("ItemContainer{0}", i)).gameObject;
+            itemPnl.SetActive(false);
+        }
+    }
+
+    private void PrepareEquip()
+    {
+        //Equipment Section
+        GameObject weaponPnl = EquipPanel.transform.Find("WeaponContainer").gameObject;
+        var wItem = PlayerData.ItemCollection[PlayerData.weapon.Code];
+
+        weaponPnl.transform.Find("Text").gameObject.GetComponent<Text>().text = PlayerData.weapon.Name;
+        weaponPnl.transform.Find("Icon").gameObject.GetComponent<RawImage>().texture = TerrainGenerator.LoadPNG(String.Format(@".\Assets\Sprites\weapons\{0}.png", wItem.IconName));
+
+        GameObject armourPnl = EquipPanel.transform.Find("ArmourContainer").gameObject;
+        var aItem = PlayerData.ItemCollection[PlayerData.armour.Code];
+
+        armourPnl.transform.Find("Text").gameObject.GetComponent<Text>().text = PlayerData.armour.Name;
+        armourPnl.transform.Find("Icon").gameObject.GetComponent<RawImage>().texture = TerrainGenerator.LoadPNG(String.Format(@".\Assets\Sprites\armour\{0}.png", aItem.IconName));
+
+        // Stats Section
+
+        StatsLeftPnl.transform.Find("LvlStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Level", PlayerData.Level.ToString());
+        StatsLeftPnl.transform.Find("StrStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Strenght", PlayerData.Attackpow.ToString());
+        StatsLeftPnl.transform.Find("DefStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Defence", PlayerData.Defence.ToString());
+        StatsLeftPnl.transform.Find("SpdStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Speed", PlayerData.AttSpeed.ToString());
+
+        //StatsRightPnl.transform.Find("LvlStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Level", PlayerData.Level.ToString());
+        StatsRightPnl.transform.Find("MagStatTxt").gameObject.GetComponent<Text>().text = String.Format("Magic : {0}", PlayerData.MagPow.ToString());
+        StatsRightPnl.transform.Find("MDefStatTxt").gameObject.GetComponent<Text>().text = String.Format("Mag Def. : {0}", PlayerData.MagicDef.ToString());
+        StatsRightPnl.transform.Find("AccStatTxt").gameObject.GetComponent<Text>().text = String.Format("Acuracy : {0}", PlayerData.AttAcc.ToString());
+
+    }
+
+    private void PrepareInventory()
+    {
+        List<ItemData> lstItems = new List<ItemData>();
+        List<int> lstCant = new List<int>();
+        foreach(var item in PlayerData.Bag)
+        {
+            lstItems.Add(PlayerData.ItemCollection[item.Key]);
+            lstCant.Add(item.Value);
+        }
+        int pos = 1;
+        for(int i = 0; i < 10; i++)
+        {
+            int idx = i + (ItemPage * 10);
+            if (idx >= lstItems.Count) break;
+            else
+            {                
+                GameObject itemPnl = BagPanel.transform.Find(string.Format("ItemContainer{0}", pos)).gameObject;
+                itemPnl.transform.Find("Text").gameObject.GetComponent<Text>().text = lstItems[idx].Name;
+                itemPnl.transform.Find("CantContainer").transform.Find("Text").gameObject.GetComponent<Text>().text = lstCant[idx].ToString();
+
+                itemPnl.transform.Find("Icon").gameObject.GetComponent<RawImage>().texture = TerrainGenerator.LoadPNG(String.Format(@".\Assets\Sprites\items\{0}.png", lstItems[i].IconName));
+                itemPnl.SetActive(true);
+                pos++;
+            }
+        }        
     }
 
     //private IEnumerator EnableMenuMove(float time)

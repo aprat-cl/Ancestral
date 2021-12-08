@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using Newtonsoft.Json;
 
 public class LoadGameButton : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class LoadGameButton : MonoBehaviour
         try
         {
             if (File.Exists(SavePath)) content = File.ReadAllText(SavePath);
-            SavePlayerData data = JsonUtility.FromJson<SavePlayerData>(content);
+            SavePlayerData data = (SavePlayerData)JsonConvert.DeserializeObject(content, typeof(SavePlayerData));
 
             data.SetLoadData();
             Debug.Log("SaveData Loaded Successful!");

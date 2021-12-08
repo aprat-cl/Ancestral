@@ -5,6 +5,7 @@ using UnityEngine;
 
 public enum ItemCodes 
 {
+    //ItemSection
     None,
     Stone, 
     Flint,
@@ -51,7 +52,24 @@ public enum ItemCodes
     DarkIngot,
     LightIngot, 
     OmniIngot,
-    TopCount
+    TopCount,
+    //MeleeSection
+    Stick,
+    WoodSword,
+    TinSword,
+    IronSword,
+    //BowsSection
+    WoodBow,    
+    IronBow,
+    //StaffSection
+    Wand,
+    TinStaff,
+    IronStaff,
+    //ArmourSection
+    Shirt,
+    WoodArm,
+    TinArm,
+    IronArm
 
 }
 public enum ItemQuality

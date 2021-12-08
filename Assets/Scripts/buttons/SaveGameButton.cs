@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System;
 using System.IO;
+using Newtonsoft.Json;
 
 public class SaveGameButton : MonoBehaviour
 {
@@ -19,8 +20,8 @@ public class SaveGameButton : MonoBehaviour
     void TaskOnClick()
     {
         SavePlayerData saveData = new SavePlayerData();
-        
-        string content = JsonUtility.ToJson(saveData);
+
+        string content = JsonConvert.SerializeObject(saveData);
         if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\AncestralGame\\SaveData\\")) 
         {
             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\AncestralGame\\SaveData\\");

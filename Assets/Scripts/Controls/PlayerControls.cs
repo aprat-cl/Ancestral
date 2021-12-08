@@ -71,6 +71,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""608e5024-b9b6-4bc7-aace-b52cca7fc388"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -269,6 +278,39 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8b2f7ba1-e2cb-4116-9c58-af2a48b08140"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Pc"",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e3309caa-12fb-4409-9daf-deb01c67a971"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7aa044cb-a13c-44a9-bc4a-3ec91730dede"",
+                    ""path"": ""<XInputController>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -521,6 +563,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Ground_CameraPan = m_Ground.FindAction("CameraPan", throwIfNotFound: true);
         m_Ground_Menu = m_Ground.FindAction("Menu", throwIfNotFound: true);
         m_Ground_Action = m_Ground.FindAction("Action", throwIfNotFound: true);
+        m_Ground_Inventory = m_Ground.FindAction("Inventory", throwIfNotFound: true);
         // Battle
         m_Battle = asset.FindActionMap("Battle", throwIfNotFound: true);
         m_Battle_Select = m_Battle.FindAction("Select", throwIfNotFound: true);
@@ -591,6 +634,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Ground_CameraPan;
     private readonly InputAction m_Ground_Menu;
     private readonly InputAction m_Ground_Action;
+    private readonly InputAction m_Ground_Inventory;
     public struct GroundActions
     {
         private @PlayerControls m_Wrapper;
@@ -600,6 +644,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @CameraPan => m_Wrapper.m_Ground_CameraPan;
         public InputAction @Menu => m_Wrapper.m_Ground_Menu;
         public InputAction @Action => m_Wrapper.m_Ground_Action;
+        public InputAction @Inventory => m_Wrapper.m_Ground_Inventory;
         public InputActionMap Get() { return m_Wrapper.m_Ground; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -624,6 +669,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Action.started -= m_Wrapper.m_GroundActionsCallbackInterface.OnAction;
                 @Action.performed -= m_Wrapper.m_GroundActionsCallbackInterface.OnAction;
                 @Action.canceled -= m_Wrapper.m_GroundActionsCallbackInterface.OnAction;
+                @Inventory.started -= m_Wrapper.m_GroundActionsCallbackInterface.OnInventory;
+                @Inventory.performed -= m_Wrapper.m_GroundActionsCallbackInterface.OnInventory;
+                @Inventory.canceled -= m_Wrapper.m_GroundActionsCallbackInterface.OnInventory;
             }
             m_Wrapper.m_GroundActionsCallbackInterface = instance;
             if (instance != null)
@@ -643,6 +691,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Action.started += instance.OnAction;
                 @Action.performed += instance.OnAction;
                 @Action.canceled += instance.OnAction;
+                @Inventory.started += instance.OnInventory;
+                @Inventory.performed += instance.OnInventory;
+                @Inventory.canceled += instance.OnInventory;
             }
         }
     }
@@ -720,6 +771,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnCameraPan(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
         void OnAction(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
     }
     public interface IBattleActions
     {
