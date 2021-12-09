@@ -13,6 +13,7 @@ public class SavePlayerData
     public SavedMap CurrRoomSpec;
     public float Level, Attackpow, Defense, MagicDefense;
     public Weapon weapon;
+    public Armour armour;
     public string PlayerModelName;
     public List<ItemBagSaveData> BagItems;
 
@@ -35,6 +36,7 @@ public class SavePlayerData
         Defense = PlayerData.Defence;
         MagicDefense = PlayerData.MagicDef;
         weapon = PlayerData.weapon;
+        armour = PlayerData.armour; 
         PlayerModelName = PlayerData.PlayerModelName;
         BagItems = new List<ItemBagSaveData>();
         foreach (var o in PlayerData.Bag)
@@ -65,6 +67,7 @@ public class SavePlayerData
         PlayerData.Defence = Defense;
         PlayerData.MagicDef = MagicDefense;
         PlayerData.weapon = weapon;
+        PlayerData.armour = armour;
         PlayerData.PlayerModelName = PlayerModelName;
         PlayerData.bIsJumping = false;
         PlayerData.SceneLoaded = true;
@@ -80,54 +83,23 @@ public class SavePlayerData
 [Serializable]
 public class SavedMap
 {
-    public List<List<RoomInstance>> layout;
-    public List<List<bool>> exits;
+    public RoomInstance[,] layout;
+    public bool[,] exits;
     public Location StairUpLocation = new Location(Vector2.zero);
     public Location StairDownLocation = new Location(Vector2.zero);
     public SavedMap(MapGenerated map)
     {
-        layout = new List<List<RoomInstance>>();
-        for (int y = 0; y < map.layout.GetLength(1); y++)
-        {
-            var lst = new List<RoomInstance>();
-            for (int x = 0; x < map.layout.GetLength(0); x++)
-            {
-                lst.Add(map.layout[x, y]);
-            }
-            layout.Add(lst);
-        }
-        exits = new List<List<bool>>();
-        for (int y = 0; y < map.layout.GetLength(1); y++)
-        {
-            var lst = new List<bool>();
-            for (int x = 0; x < map.layout.GetLength(0); x++)
-            {
-                lst.Add(map.exits[x, y]);
-            }
-            exits.Add(lst);
-        }
+        layout = map.layout;
+        exits = map.exits;
         StairUpLocation = new Location(map.StairUpLocation);
         StairDownLocation = new Location(map.StairDownLocation);
     }
     public MapGenerated GenerateFromSaved()
     {
         MapGenerated map = new MapGenerated();
-        map.layout = new RoomInstance[layout[0].Count, layout.Count];
-        for (int y = 0; y < layout.Count ; y++)
-        {
-            for (int x = 0; x < layout[y].Count; x++)
-            {
-                map.layout[x, y] = layout[y][x];
-            }
-        }
-        map.exits = new bool[exits[0].Count, exits.Count];
-        for (int y = 0; y < exits.Count; y++)
-        {
-            for (int x = 0; x < exits[y].Count; x++)
-            {
-                map.exits[x, y] = exits[y][x];
-            }
-        }
+
+        map.layout = layout;
+        map.exits = exits;
         map.StairDownLocation = StairDownLocation.ToVector2();
         map.StairUpLocation = StairUpLocation.ToVector2();
 
