@@ -12,6 +12,7 @@ public class RoomInstance
     public bool bStartRoom = false;
     public Texture2D Icon;
     public RoomType type = RoomType.Initial;
+    public TreasureRoom chest;
     public static RoomInstance CreateRoom(byte combo, Connector conector)
     {
         RoomInstance room = new RoomInstance();
@@ -42,4 +43,10 @@ public class RoomInstance
         Cave,  Praire,  Lava,   Sky, Mountains, Hellish,    Beach,  Underwater, Void, Light, None
     }
 
+}
+[Serializable]
+public class TreasureRoom{
+    public bool bHasTreasure, bIsOpen;
+    public ItemCodes ItemCode;
+    public float Qty;
 }

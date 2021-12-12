@@ -17,14 +17,11 @@ public class TerrainGenerator : MonoBehaviour
     public GameObject Level, player;
     public GameObject Light;
     public RoomType tileType;
-    Vector3 StartPos;
-
-    
+    Vector3 StartPos;    
 
     void Start()
     {
-        fillItemData();
-        
+        fillItemData();        
 
         if (PlayerData.CurrRoomSpec == null)
         {
@@ -54,7 +51,8 @@ public class TerrainGenerator : MonoBehaviour
                 PowerSpecial = 12,
                 SpecialManaUsage = 10,
                 Pow1Usage = 0,
-                Pow2Usage = 5
+                Pow2Usage = 5,
+                AccBonus = 0
             };
 
             PlayerData.armour = new Armour()
@@ -67,7 +65,8 @@ public class TerrainGenerator : MonoBehaviour
                 type = ArmourType.Normal,
                 ExpBonus = 0,
                 MBonus = 0,
-                PowBonus = 0
+                PowBonus = 0,
+                SpeedBonus = 0.10f                
             };
 
             PlayerData.CurrRoomSpec.StairDownLocation = new Vector2(-1, -1);
@@ -145,7 +144,6 @@ public class TerrainGenerator : MonoBehaviour
 
         PlayerData.ItemCollection.Add(ItemCodes.Shirt, new ItemData(ItemCodes.Shirt, "shirt", "Torn Shirt", 0));
         PlayerData.ItemCollection.Add(ItemCodes.WoodArm, new ItemData(ItemCodes.WoodArm, "shirt", "Wood Armour", 0));
-
         
 
     }
@@ -157,7 +155,7 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x < LevelWidth; x++)
             {
-                CreateRoomObject(PlayerData.CurrRoomSpec.layout[x, y], x, y, PlayerData.CurrRoomSpec.exits[x, y], tileType);
+                CreateRoomObject(PlayerData.CurrRoomSpec.layout[x, y], x, y, PlayerData.CurrRoomSpec.exits[x, y], PlayerData.CurrRoomSpec.spoils[x,y], tileType);
 
             }
         }
@@ -184,6 +182,27 @@ public class TerrainGenerator : MonoBehaviour
         for (int i = 0; i < LevelHeight; ++i)
             for (int j = 0; j < LevelWidth; ++j)
                 PlayerData.CurrRoomSpec.exits[j, i] = UnityEngine.Random.Range(0, 10) > 8;
+
+        PlayerData.CurrRoomSpec.spoils = new TreasureRoom[LevelWidth, LevelHeight];
+
+        for (int i = 0; i < LevelHeight; ++i)
+        {
+            for (int j = 0; j < LevelWidth; ++j)
+            {
+                TreasureRoom temp = new TreasureRoom();
+                temp.bHasTreasure = UnityEngine.Random.Range(0, 10) > 7;
+                if (temp.bHasTreasure)
+                {
+                    float chance = UnityEngine.Random.Range(0f, 1f);
+                    ChestSize cs = chance < 0.6 ? ChestSize.Small : chance < 0.9 ? ChestSize.Medium : ChestSize.Large;
+                    temp.ItemCode = GetItemByLevel(PlayerData.Level, tileType, cs);
+                    temp.Qty = GetQtyBylevel(PlayerData.Level, cs);
+                    if (temp.ItemCode == ItemCodes.None) temp.bHasTreasure = false;
+                }
+                PlayerData.CurrRoomSpec.spoils[j, i] = temp;
+            }
+        }
+                
 
         for (int y = 0; y < LevelHeight; y++)
         {
@@ -242,7 +261,7 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x < LevelWidth; x++)
             {
-                CreateRoomObject(PlayerData.CurrRoomSpec.layout[x, y], x, y, PlayerData.CurrRoomSpec.exits[x,y], tileType); 
+                CreateRoomObject(PlayerData.CurrRoomSpec.layout[x, y], x, y, PlayerData.CurrRoomSpec.exits[x,y], PlayerData.CurrRoomSpec.spoils[x,y], tileType); 
                 
             }
         }
@@ -303,7 +322,7 @@ public class TerrainGenerator : MonoBehaviour
         return color;
     }
 
-    void CreateRoomObject(RoomInstance room, int posX, int posY, bool HasExit, RoomType type)
+    void CreateRoomObject(RoomInstance room, int posX, int posY, bool HasExit, TreasureRoom spoil, RoomType type)
     {
         string Folder = "";
         switch (type)
@@ -414,13 +433,17 @@ public class TerrainGenerator : MonoBehaviour
         {
             Destroy(instance.transform.Find("Teleport").gameObject);
         }
+        if (!spoil.bHasTreasure)
+        {
+            Destroy(instance.transform.Find("Chest").gameObject);
+        }
         if (!room.bStartRoom)
         {
             Destroy(instance.transform.Find("Arrival").gameObject);
         }
         else
         {
-            Debug.Log(string.Format("Room ({0}, {1}): Not StartRoom", posX, posY));
+            //Debug.Log(string.Format("Room ({0}, {1}): Not StartRoom", posX, posY));
         }
         if(Mathf.RoundToInt(PlayerData.CurrRoomSpec.StairUpLocation.x) == posX && Mathf.RoundToInt(PlayerData.CurrRoomSpec.StairUpLocation.y) == posY)
         {
@@ -430,11 +453,19 @@ public class TerrainGenerator : MonoBehaviour
         {
             instance.transform.Find("StairUp").gameObject.SetActive(false);
         }
-        
+        if (Mathf.RoundToInt(PlayerData.CurrRoomSpec.StairDownLocation.x) == posX && Mathf.RoundToInt(PlayerData.CurrRoomSpec.StairDownLocation.y) == posY)
+        {
+            instance.transform.Find("StairDown").gameObject.SetActive(true);
+        }
+        else
+        {
+            instance.transform.Find("StairDown").gameObject.SetActive(false);
+        }
+
 
         Texture2D mapicon = GetMapIconRoom(room);
         room.Icon = mapicon;
-
+        room.chest = spoil;
         rc.room = room;
 
         instance.transform.position = new Vector3(posX * 20, -0.5f, posY * 20);
@@ -467,7 +498,225 @@ public class TerrainGenerator : MonoBehaviour
 
 
     }
+    private float GetQtyBylevel(float Level, ChestSize size)
+    {
+        float qtyChance = UnityEngine.Random.Range(0f, 1f);
 
+        float QtyBase = qtyChance < 0.5f ? 1 : qtyChance < 0.75 ? 2 : qtyChance < 0.875 ? 3 : qtyChance < 0.9325f ? 4 : 5;
+
+        int totalQty = Mathf.RoundToInt(QtyBase * (Level / 10));
+
+        if (totalQty < 1) totalQty = 1;
+
+        return totalQty;
+
+    }
+    private ItemCodes GetItemByLevel(float level, RoomType type, ChestSize size)
+    {
+        ItemCodes SelItem = ItemCodes.None;
+        List<ItemCodes> itemCodes = new List<ItemCodes>();
+
+        switch (type)
+        {
+            case RoomType.Initial:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.TinChip);
+                break;
+            case RoomType.None:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.None);
+                break;
+            case RoomType.Cave:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.TinChip);
+                break;
+            case RoomType.Praire:
+                itemCodes.Add(ItemCodes.None);
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.WoodChip);
+                break;
+            case RoomType.Mountains:
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.IronChip);
+                itemCodes.Add(ItemCodes.CopperChip);
+                break;
+            case RoomType.Sky:
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.CopperChip);
+                itemCodes.Add(ItemCodes.SteelChip);
+                itemCodes.Add(ItemCodes.EmeraldChip);
+                break;
+            case RoomType.Beach:
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.Shell);
+                itemCodes.Add(ItemCodes.SteelChip);
+                itemCodes.Add(ItemCodes.SilverChip);
+                break;
+            case RoomType.Hellish:
+                itemCodes.Add(ItemCodes.Bone);
+                itemCodes.Add(ItemCodes.Shell);
+                itemCodes.Add(ItemCodes.SilverChip);
+                itemCodes.Add(ItemCodes.HellChip);
+                break;
+            case RoomType.Lava:
+                itemCodes.Add(ItemCodes.Stone);
+                itemCodes.Add(ItemCodes.Flint);
+                itemCodes.Add(ItemCodes.HellChip);
+                itemCodes.Add(ItemCodes.GoldChip);
+                break;
+            case RoomType.Underwater:
+                itemCodes.Add(ItemCodes.WoodChip);
+                itemCodes.Add(ItemCodes.Shell);
+                itemCodes.Add(ItemCodes.LapisChip);
+                itemCodes.Add(ItemCodes.SaphireChip);
+                break;
+            case RoomType.Void:
+                itemCodes.Add(ItemCodes.SilverChip);
+                itemCodes.Add(ItemCodes.GoldChip);
+                itemCodes.Add(ItemCodes.OricalcumChip);
+                itemCodes.Add(ItemCodes.MithrilChip);
+                break;
+            case RoomType.Light:
+                itemCodes.Add(ItemCodes.MithrilChip);
+                itemCodes.Add(ItemCodes.SkyChip);
+                itemCodes.Add(ItemCodes.DarkChip);
+                itemCodes.Add(ItemCodes.OmniChip);
+                break;
+        }
+        switch (size)
+        {
+            
+            case ChestSize.Small:
+                {
+                    float chance = UnityEngine.Random.Range(0f, 1f);
+                    float quality = UnityEngine.Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.02)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.06)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.125)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.25)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.40)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            case ChestSize.Medium:
+                {
+                    float chance = UnityEngine.Random.Range(0f, 1f);
+                    float quality = UnityEngine.Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.03)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.08)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.16)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.30)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.55)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            case ChestSize.Large:
+                {
+                    float chance = UnityEngine.Random.Range(0f, 1f);
+                    float quality = UnityEngine.Random.Range(0f, 1f);
+                    ItemQuality item_quality = ItemQuality.Normal;
+                    if (quality < 0.01) item_quality = ItemQuality.Legendary;
+                    else if (quality < 0.05) item_quality = ItemQuality.Special;
+                    else if (quality < 0.1) item_quality = ItemQuality.Rare;
+                    else if (quality < 0.25) item_quality = ItemQuality.Uncommon;
+                    else item_quality = ItemQuality.Normal;
+                    if (chance < 0.045)
+                    {
+                        SelItem = GetByQuality(itemCodes[3], item_quality);
+                    }
+                    else if (chance < 0.10)
+                    {
+                        SelItem = GetByQuality(itemCodes[2], item_quality);
+                    }
+                    else if (chance < 0.20)
+                    {
+                        SelItem = GetByQuality(itemCodes[1], item_quality);
+                    }
+                    else if (chance < 0.40)
+                    {
+                        SelItem = GetByQuality(itemCodes[0], item_quality);
+                    }
+                    else if (chance < 0.60)
+                    {
+                        SelItem = GetByQuality(ItemCodes.Junk, item_quality);
+                    }
+                    else SelItem = ItemCodes.None;
+                }
+                break;
+            
+        }
+        return SelItem;
+    }
+    public ItemCodes GetByQuality(ItemCodes code, ItemQuality quality)
+    {
+        ItemCodes item = code;
+        switch (code)
+        {
+            case ItemCodes.None:
+                item = ItemCodes.None;
+                break;
+            case ItemCodes.Stone:
+                item = quality > ItemQuality.Special ? ItemCodes.Flint : ItemCodes.Stone;
+                break;
+            case ItemCodes.Bone:
+                item = quality > ItemQuality.Special ? ItemCodes.Shell : ItemCodes.Bone;
+                break;
+            default:
+                item = quality > ItemQuality.Special ? (ItemCodes)(((int)code) + 20) : code;
+                break;
+        }
+        return item;
+    }
     private UnityEngine.Object LoadPrefabFromFile(string filename)
     {
         //Debug.Log("Trying to load LevelPrefab from file (" + filename + ")...");
@@ -492,4 +741,8 @@ public class TerrainGenerator : MonoBehaviour
         }
         return tex;
     }       
+}
+public enum ChestSize
+{
+    Small, Medium, Large
 }

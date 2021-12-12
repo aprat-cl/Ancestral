@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 public class SaveGameButton : MonoBehaviour
 {
+    public GameObject SavePanel;
     // Start is called before the first frame update
     void Start()
     {
@@ -32,12 +33,28 @@ public class SaveGameButton : MonoBehaviour
         {
             if(File.Exists(SavePath)) File.Copy(SavePath, BkpPath, true);
             File.WriteAllText(SavePath, content);
+            SavePanel.transform.Find("Text").GetComponent<Text>().text = "Save successful!";
+            SavePanel.GetComponent<Image>().color = new Color(0.1960784f, 0.3643001f, 0.5647059f, 1);
+            SavePanel.SetActive(true);
+            StartCoroutine(ClosePanelAfter(2f));
         }
         catch(Exception ex)
         {
+            SavePanel.transform.Find("Text").GetComponent<Text>().text = "Error saving File!";
+            SavePanel.GetComponent<Image>().color = new Color(0.5647059f, 0.2530474f, 0.1960784f, 1);
+            SavePanel.SetActive(true);
+            StartCoroutine(ClosePanelAfter(2f));
             Debug.LogError("Cannot write Savefile data! " + ex.Message);
         }
     }
+
+    private IEnumerator ClosePanelAfter(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        SavePanel.SetActive(false);
+    }
+
     public string Encrypt2(string prm_text_to_encrypt, string prm_key, string prm_iv)
     {
         var sToEncrypt = prm_text_to_encrypt;

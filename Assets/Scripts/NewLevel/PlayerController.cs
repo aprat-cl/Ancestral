@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using static RoomInstance;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,11 +16,12 @@ public class PlayerController : MonoBehaviour
     Vector3 direction;
     int ItemPage = 0;
     Rigidbody rb;
-    bool bAllowJump, bAllowMove, bIsDashing, bStartHealing;//, bMenuOpen;
+    bool bAllowJump, bAllowMove, bIsDashing, bStartHealing, bAllowOpenChest;//, bMenuOpen;
     float TimeForBattle, ActualTFB;
-    public GameObject PlayerPanel, MainMenu, GoldText, HealthText, ManaText, Inventory, BagPanel, EquipPanel, StatsLeftPnl, StatsRightPnl;
+    public GameObject MainMenu, GoldText, HealthText, ManaText, Inventory, BagPanel, EquipPanel, StatsLeftPnl, StatsRightPnl, ChestPanel;
     public static List<GameObject> menuButtons;
     public static int SelectedButton = 0;
+    public RoomType roomType;
     
 
     private PlayerControls playerControls;
@@ -32,10 +34,14 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         playerControls.Enable();
+        playerControls.Ground.Jump.performed += onJumpEvent;
+        playerControls.Ground.Action.performed += onActionEvent;
     }
     private void OnDisable()
     {
         playerControls.Disable();
+        playerControls.Ground.Jump.performed -= onJumpEvent;
+        playerControls.Ground.Action.performed -= onActionEvent;
     }
 
     void Start()
@@ -52,7 +58,7 @@ public class PlayerController : MonoBehaviour
         bAllowMove = true;
         TimeForBattle = UnityEngine.Random.Range(10f, 20f);
         ActualTFB = 0f;
-        playerControls.Ground.Jump.performed += onJumpEvent;
+        
         PlayerData.parentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
     }
 
@@ -73,6 +79,42 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(EnableMoveAfter(0.2f));
             }
         }
+    }
+    private void onActionEvent(InputAction.CallbackContext obj)
+    {
+        if (transform.position.y < 0.5f && bAllowMove && !Inventory.activeSelf && !MainMenu.activeSelf)
+        {
+            if(bAllowOpenChest)
+            {
+                if(PlayerData.CurrentRoom.chest.bHasTreasure && !PlayerData.CurrentRoom.chest.bIsOpen)
+                {
+                    var item = PlayerData.ItemCollection[PlayerData.CurrentRoom.chest.ItemCode];
+                    if (PlayerData.Bag.ContainsKey(PlayerData.CurrentRoom.chest.ItemCode))
+                    {
+                        PlayerData.Bag[PlayerData.CurrentRoom.chest.ItemCode]+= Mathf.RoundToInt(PlayerData.CurrentRoom.chest.Qty);
+                    }
+                    else
+                    {
+                        PlayerData.Bag.Add(PlayerData.CurrentRoom.chest.ItemCode,Mathf.RoundToInt(PlayerData.CurrentRoom.chest.Qty));
+                    }
+                    PlayerData.CurrentRoom.chest.bIsOpen = true;
+
+                    GameObject itemContainer = ChestPanel.transform.Find("Content").transform.Find("ItemContainer").gameObject;
+                    itemContainer.transform.Find("Text").GetComponent<Text>().text = item.Name;
+                    itemContainer.transform.Find("CantContainer").transform.Find("Text").GetComponent<Text>().text = Mathf.RoundToInt(PlayerData.CurrentRoom.chest.Qty).ToString();
+                    itemContainer.transform.Find("Icon").GetComponent<RawImage>().texture = TerrainGenerator.LoadPNG(string.Format(@".\Assets\Sprites\items\{0}.png", item.IconName));
+
+                    ChestPanel.SetActive(true);
+                    StartCoroutine(CloseChestAfter(3f));
+                }                
+            }
+        }
+    }
+
+    private IEnumerator CloseChestAfter(float time)
+    {
+        yield return new WaitForSeconds(time);
+        ChestPanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -229,14 +271,14 @@ public class PlayerController : MonoBehaviour
         // Stats Section
 
         StatsLeftPnl.transform.Find("LvlStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Level", PlayerData.Level.ToString());
-        StatsLeftPnl.transform.Find("StrStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Strenght", PlayerData.Attackpow.ToString());
-        StatsLeftPnl.transform.Find("DefStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Defence", PlayerData.Defence.ToString());
-        StatsLeftPnl.transform.Find("SpdStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Speed", PlayerData.AttSpeed.ToString());
+        StatsLeftPnl.transform.Find("StrStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0}({1}) : Strenght", PlayerData.Attackpow.ToString(), PlayerData.weapon.type == WeaponType.Melee || PlayerData.weapon.type == WeaponType.Ranged? (PlayerData.Attackpow + PlayerData.weapon.Power1).ToString(): PlayerData.Attackpow.ToString());
+        StatsLeftPnl.transform.Find("DefStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0}({1}) : Defence", PlayerData.Defence.ToString(), (PlayerData.Defence + PlayerData.armour.Def).ToString());
+        StatsLeftPnl.transform.Find("SpdStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0}({1}) : Speed", PlayerData.AttSpeed.ToString(), (PlayerData.AttSpeed + PlayerData.armour.SpeedBonus).ToString());
 
         //StatsRightPnl.transform.Find("LvlStatTxt").gameObject.GetComponent<Text>().text = String.Format("{0} : Level", PlayerData.Level.ToString());
-        StatsRightPnl.transform.Find("MagStatTxt").gameObject.GetComponent<Text>().text = String.Format("Magic : {0}", PlayerData.MagPow.ToString());
-        StatsRightPnl.transform.Find("MDefStatTxt").gameObject.GetComponent<Text>().text = String.Format("Mag Def. : {0}", PlayerData.MagicDef.ToString());
-        StatsRightPnl.transform.Find("AccStatTxt").gameObject.GetComponent<Text>().text = String.Format("Acuracy : {0}", PlayerData.AttAcc.ToString());
+        StatsRightPnl.transform.Find("MagStatTxt").gameObject.GetComponent<Text>().text = String.Format("Magic : {0}({1})", PlayerData.MagPow.ToString(), PlayerData.weapon.type == WeaponType.MagicMele || PlayerData.weapon.type == WeaponType.MagicRanged ? (PlayerData.MagPow + PlayerData.weapon.Power1 + PlayerData.armour.MBonus).ToString() : PlayerData.MagPow.ToString());
+        StatsRightPnl.transform.Find("MDefStatTxt").gameObject.GetComponent<Text>().text = String.Format("Mag Def. : {0}({1})", PlayerData.MagicDef.ToString(), (PlayerData.MagicDef + PlayerData.armour.MagDef).ToString());
+        StatsRightPnl.transform.Find("AccStatTxt").gameObject.GetComponent<Text>().text = String.Format("Acuracy : {0}({1})", PlayerData.AttAcc.ToString(), (PlayerData.AttAcc + PlayerData.weapon.AccBonus).ToString());
 
     }
 
@@ -309,6 +351,10 @@ public class PlayerController : MonoBehaviour
         {
             bStartHealing = true;
         }
+        else if(other.tag == "chest")
+        {
+            bAllowOpenChest = true;
+        }
     }
     private void OnTriggerExit(Collider other)
     {        
@@ -316,6 +362,11 @@ public class PlayerController : MonoBehaviour
         {
             bStartHealing = false;
         }
+        else if(other.tag == "chest")
+        {
+            bAllowOpenChest = false;
+        }
+
     }
     private void FixedUpdate()
     {

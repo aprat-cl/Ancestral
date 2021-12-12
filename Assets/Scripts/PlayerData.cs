@@ -29,6 +29,7 @@ public class Weapon
     public string Name;
     public float Power1, Power2, PowerSpecial;
     public float SpecialManaUsage, Pow1Usage, Pow2Usage;
+    public float AccBonus;
     public WeaponType type;
 }
 [Serializable]
@@ -37,7 +38,7 @@ public class Armour
     public ItemCodes Code, Material;
     public string Name;
     public float Def, MagDef;
-    public float MBonus, PowBonus, ExpBonus;
+    public float MBonus, PowBonus, ExpBonus, SpeedBonus;
     public ArmourType type;
 }
 public enum WeaponType
@@ -53,6 +54,7 @@ public class MapGenerated
 {
     public RoomInstance[,] layout;
     public bool[,] exits;
+    public TreasureRoom[,] spoils;
     public Vector2 StairUpLocation = Vector2.zero;
     public Vector2 StairDownLocation = Vector2.zero;
 

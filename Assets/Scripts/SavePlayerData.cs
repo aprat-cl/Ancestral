@@ -85,12 +85,14 @@ public class SavedMap
 {
     public RoomInstance[,] layout;
     public bool[,] exits;
+    public TreasureRoom[,] spoils;
     public Location StairUpLocation = new Location(Vector2.zero);
     public Location StairDownLocation = new Location(Vector2.zero);
     public SavedMap(MapGenerated map)
     {
         layout = map.layout;
         exits = map.exits;
+        spoils = map.spoils;
         StairUpLocation = new Location(map.StairUpLocation);
         StairDownLocation = new Location(map.StairDownLocation);
     }
@@ -100,6 +102,7 @@ public class SavedMap
 
         map.layout = layout;
         map.exits = exits;
+        map.spoils = spoils;
         map.StairDownLocation = StairDownLocation.ToVector2();
         map.StairUpLocation = StairUpLocation.ToVector2();
 
