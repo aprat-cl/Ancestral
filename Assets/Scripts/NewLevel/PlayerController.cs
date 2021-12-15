@@ -11,7 +11,7 @@ using static RoomInstance;
 public class PlayerController : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float Velocity, JumpForce;
+    public float Velocity, JumpForce, ManaForBreak;
     public Text debugText;
     Vector3 direction;
     int ItemPage = 0;
@@ -345,7 +345,7 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Trigger a door break!");
             Destroy(other.gameObject);
-            PlayerData.ManaUsage += 7.5f;
+            PlayerData.ManaUsage += ManaForBreak / 4f;
         }
         else if (other.tag == "teleport")
         {

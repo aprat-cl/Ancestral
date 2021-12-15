@@ -2980,6 +2980,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Velocity: 10
   JumpForce: 50
+  ManaForBreak: 15
   debugText: {fileID: 1312824559}
   MainMenu: {fileID: 1305929593}
   GoldText: {fileID: 2068975979}

@@ -16,7 +16,7 @@ public class BattleController : MonoBehaviour
     Hashtable enemyNames = new Hashtable();
     int EnemySelected = 0;
     bool bAllowMove = true, bAllowAttack = true, bBattleEnded = false;
-    public GameObject PlayerPanel, ItemsPanel, GoldText;
+    public GameObject PlayerPanel, ItemsPanel, GoldText, DeathPanel;
     float CurrTimePlayerAtt = 0;
     // Start is called before the first frame update
     private PlayerControls playerControls;
@@ -66,7 +66,7 @@ public class BattleController : MonoBehaviour
         
         if (!bBattleEnded)
         {
-            if (playerControls.Battle.Select.ReadValue<Vector2>().y > 0.5 && bAllowMove)
+            if (playerControls.Battle.Move.ReadValue<Vector2>().y > 0.5 && bAllowMove)
             {
                 bAllowMove = false;
                 bChanged = true;
@@ -85,7 +85,7 @@ public class BattleController : MonoBehaviour
                 }
                 StartCoroutine(AllowMoveAfter(0.33f));
             }
-            else if (playerControls.Battle.Select.ReadValue<Vector2>().y < -0.5 && bAllowMove)
+            else if (playerControls.Battle.Move.ReadValue<Vector2>().y < -0.5 && bAllowMove)
             {
                 bAllowMove = false;
                 bChanged = true;
@@ -105,15 +105,7 @@ public class BattleController : MonoBehaviour
                 }
                 StartCoroutine(AllowMoveAfter(0.33f));
             }
-            if (bChanged)
-            {
-                var EnemyPanelPrev = getEnemyPanel(PrevSelected).GetComponent<Image>();
-                var EnemyPanelAct = getEnemyPanel(EnemySelected).GetComponent<Image>();
-
-                EnemyPanelPrev.color = new Color(1f, 1f, 1f, 0.39f);
-                EnemyPanelAct.color = new Color(0f, 1f, 0.095f, 0.51f);
-                
-            }
+            
 
             //PLAYER ATACK REGION
             GameObject turnBar = PlayerPanel.transform.Find("Turn").gameObject;
@@ -129,13 +121,33 @@ public class BattleController : MonoBehaviour
                 {
                     if (PlayerData.PlayerMana - PlayerData.ManaUsage > PlayerData.weapon.Pow1Usage)
                     {
+                        bAllowAttack = false;
                         //Mele
-                        if (UpdateEnemyDamage(PlayerData.weapon.Power1 * PlayerData.Attackpow))
-                        {
-                            bAllowAttack = false;
+                        if (UpdateEnemyDamage(PlayerData.weapon.Power1 * PlayerData.Attackpow, out bool bKill))
+                        {                            
                             AttUsage = PlayerData.weapon.Pow1Usage;
+
+                            if (bKill && !CheckAllDead())
+                            {
+                                bAllowMove = false;
+                                bChanged = true;
+                                EnemySelected++;
+
+                                if (EnemySelected > enemies.Count - 1)
+                                {
+                                    EnemySelected = EnemySelected - enemies.Count;
+                                }
+                                while (enemyKills[EnemySelected])
+                                {
+                                    EnemySelected++;
+                                    if (EnemySelected > enemies.Count - 1)
+                                    {
+                                        EnemySelected = EnemySelected - enemies.Count;
+                                    }
+                                }
+                            }
                         }
-                        StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
+                       // StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
                         StartCoroutine(CheckBattleEnded());
                     }
                     else
@@ -148,12 +160,32 @@ public class BattleController : MonoBehaviour
                     //Ranged or Hard
                     if (PlayerData.PlayerMana - PlayerData.ManaUsage > PlayerData.weapon.Pow2Usage)
                     {
-                        if (UpdateEnemyDamage(PlayerData.weapon.Power2 * PlayerData.Attackpow))
+                        bAllowAttack = false;
+                        if (UpdateEnemyDamage(PlayerData.weapon.Power2 * PlayerData.Attackpow, out bool bKill))
                         {
-                            bAllowAttack = false;
+                            
                             AttUsage = PlayerData.weapon.Pow2Usage;
+                            if (bKill && !CheckAllDead())
+                            {
+                                bAllowMove = false;
+                                bChanged = true;
+                                EnemySelected++;
+
+                                if (EnemySelected > enemies.Count - 1)
+                                {
+                                    EnemySelected = EnemySelected - enemies.Count;
+                                }
+                                while (enemyKills[EnemySelected])
+                                {
+                                    EnemySelected++;
+                                    if (EnemySelected > enemies.Count - 1)
+                                    {
+                                        EnemySelected = EnemySelected - enemies.Count;
+                                    }
+                                }
+                            }
                         }
-                        StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
+                       // StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
                         StartCoroutine(CheckBattleEnded());
                     }
                     else
@@ -165,13 +197,32 @@ public class BattleController : MonoBehaviour
                 {
                     if (PlayerData.PlayerMana - PlayerData.ManaUsage > PlayerData.weapon.SpecialManaUsage)
                     {
+                        bAllowAttack = false;
                         //Special
-                        if (UpdateEnemyDamage(PlayerData.weapon.PowerSpecial * PlayerData.Attackpow))
-                        {
-                            bAllowAttack = false;
+                        if (UpdateEnemyDamage(PlayerData.weapon.PowerSpecial * PlayerData.Attackpow, out bool bKill))
+                        {                            
                             AttUsage = PlayerData.weapon.SpecialManaUsage;
+                            if (bKill && !CheckAllDead())
+                            {
+                                bAllowMove = false;
+                                bChanged = true;
+                                EnemySelected++;
+
+                                if (EnemySelected > enemies.Count - 1)
+                                {
+                                    EnemySelected = EnemySelected - enemies.Count;
+                                }
+                                while (enemyKills[EnemySelected])
+                                {
+                                    EnemySelected++;
+                                    if (EnemySelected > enemies.Count - 1)
+                                    {
+                                        EnemySelected = EnemySelected - enemies.Count;
+                                    }
+                                }
+                            }
                         }
-                        StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
+                        //StartCoroutine(AllowAttackAfter(10 - PlayerData.AttSpeed));
                         StartCoroutine(CheckBattleEnded());
                     }
                     else
@@ -199,9 +250,23 @@ public class BattleController : MonoBehaviour
                 var ActValue = totalTime * percent / 100;
 
                 timeBar.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, totalTime - ActValue);
+                if(totalTime - ActValue <= 0)
+                {
+                    bAllowAttack = true;
+                }
+            }
+            //Enemy Change Detected
+            if (bChanged)
+            {
+                var EnemyPanelPrev = getEnemyPanel(PrevSelected).GetComponent<Image>();
+                var EnemyPanelAct = getEnemyPanel(EnemySelected).GetComponent<Image>();
+
+                EnemyPanelPrev.color = new Color(1f, 1f, 1f, 0.39f);
+                EnemyPanelAct.color = new Color(0f, 1f, 0.095f, 0.51f);
+
             }
             //ENEMY ATTACK REGION
-            for(int i = 0; i < enemies.Count; i++)
+            for (int i = 0; i < enemies.Count; i++)
             {
                 if (!enemyKills[i])
                 {
@@ -238,6 +303,10 @@ public class BattleController : MonoBehaviour
                         {//HIT!
                             float PlayerDef = attackType == AttackType.Mele || attackType == AttackType.Ranged ? PlayerData.Defence : PlayerData.MagicDef;
                             PlayerData.PlayerDamage += att_dmg - ((PlayerDef / 10) * att_dmg);
+                            if(PlayerData.PlayerDamage >= PlayerData.PlayerHealth - 1f)
+                            {
+                                StartCoroutine(PlayerDied(5f));
+                            }
                         }
                     }
                 }
@@ -245,6 +314,25 @@ public class BattleController : MonoBehaviour
             StartCoroutine(UpdatePlayerInfo());
         }
             
+    }
+
+    private bool CheckAllDead()
+    {
+        bool AllEnemyDead = true;
+        for (int i = 0; i < enemyKills.Count; i++)
+        {
+            AllEnemyDead &= (bool)enemyKills[i];
+            //bMoveToNextEnemy = true;
+        }
+        return AllEnemyDead;
+    }
+
+    private IEnumerator PlayerDied(float timeToShow)
+    {
+        DeathPanel.SetActive(true);
+        yield return new WaitForSeconds(timeToShow);
+        DeathPanel.SetActive(false);
+        SceneManager.LoadScene("LoadMenu");        
     }
 
     private IEnumerator AnimateLackMana(float time, GameObject panel)
@@ -285,8 +373,9 @@ public class BattleController : MonoBehaviour
         yield return new WaitForSeconds(0.01f);
     }
 
-    private bool UpdateEnemyDamage(float Damage)
+    private bool UpdateEnemyDamage(float Damage, out bool bKilled)
     {
+        bKilled = false;
         if (!(bool)enemyKills[EnemySelected])
         {
             GameObject panel = (GameObject)enemyPanels[EnemySelected];
@@ -320,6 +409,7 @@ public class BattleController : MonoBehaviour
                 panel.SetActive(false);
                 Destroy(enemy);
                 enemyKills[EnemySelected] = true;
+                bKilled = true;
             }
 
             float percent = ec.Damage * 100 / ec.Health;

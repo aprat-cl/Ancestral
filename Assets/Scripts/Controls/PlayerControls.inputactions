@@ -299,7 +299,7 @@
             "id": "e8cc955b-93e2-4d82-a328-2089ad9db79c",
             "actions": [
                 {
-                    "name": "Select",
+                    "name": "Move",
                     "type": "Value",
                     "id": "7575b27f-3ac3-452e-bb75-375f79818b2c",
                     "expectedControlType": "Vector2",
@@ -343,7 +343,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -354,7 +354,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -365,7 +365,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -376,7 +376,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Pc",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -387,7 +387,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Pc",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -398,7 +398,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Pc",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -409,7 +409,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Pc",
-                    "action": "Select",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

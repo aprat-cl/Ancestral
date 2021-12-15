@@ -321,7 +321,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
             ""id"": ""e8cc955b-93e2-4d82-a328-2089ad9db79c"",
             ""actions"": [
                 {
-                    ""name"": ""Select"",
+                    ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""7575b27f-3ac3-452e-bb75-375f79818b2c"",
                     ""expectedControlType"": ""Vector2"",
@@ -365,7 +365,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -376,7 +376,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -387,7 +387,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -398,7 +398,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Pc"",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -409,7 +409,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Pc"",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -420,7 +420,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Pc"",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -431,7 +431,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Pc"",
-                    ""action"": ""Select"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -566,7 +566,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Ground_Inventory = m_Ground.FindAction("Inventory", throwIfNotFound: true);
         // Battle
         m_Battle = asset.FindActionMap("Battle", throwIfNotFound: true);
-        m_Battle_Select = m_Battle.FindAction("Select", throwIfNotFound: true);
+        m_Battle_Move = m_Battle.FindAction("Move", throwIfNotFound: true);
         m_Battle_AttackLight = m_Battle.FindAction("AttackLight", throwIfNotFound: true);
         m_Battle_AttackHard = m_Battle.FindAction("AttackHard", throwIfNotFound: true);
         m_Battle_AttackSpecial = m_Battle.FindAction("AttackSpecial", throwIfNotFound: true);
@@ -702,7 +702,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     // Battle
     private readonly InputActionMap m_Battle;
     private IBattleActions m_BattleActionsCallbackInterface;
-    private readonly InputAction m_Battle_Select;
+    private readonly InputAction m_Battle_Move;
     private readonly InputAction m_Battle_AttackLight;
     private readonly InputAction m_Battle_AttackHard;
     private readonly InputAction m_Battle_AttackSpecial;
@@ -710,7 +710,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     {
         private @PlayerControls m_Wrapper;
         public BattleActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Select => m_Wrapper.m_Battle_Select;
+        public InputAction @Move => m_Wrapper.m_Battle_Move;
         public InputAction @AttackLight => m_Wrapper.m_Battle_AttackLight;
         public InputAction @AttackHard => m_Wrapper.m_Battle_AttackHard;
         public InputAction @AttackSpecial => m_Wrapper.m_Battle_AttackSpecial;
@@ -723,9 +723,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_BattleActionsCallbackInterface != null)
             {
-                @Select.started -= m_Wrapper.m_BattleActionsCallbackInterface.OnSelect;
-                @Select.performed -= m_Wrapper.m_BattleActionsCallbackInterface.OnSelect;
-                @Select.canceled -= m_Wrapper.m_BattleActionsCallbackInterface.OnSelect;
+                @Move.started -= m_Wrapper.m_BattleActionsCallbackInterface.OnMove;
+                @Move.performed -= m_Wrapper.m_BattleActionsCallbackInterface.OnMove;
+                @Move.canceled -= m_Wrapper.m_BattleActionsCallbackInterface.OnMove;
                 @AttackLight.started -= m_Wrapper.m_BattleActionsCallbackInterface.OnAttackLight;
                 @AttackLight.performed -= m_Wrapper.m_BattleActionsCallbackInterface.OnAttackLight;
                 @AttackLight.canceled -= m_Wrapper.m_BattleActionsCallbackInterface.OnAttackLight;
@@ -739,9 +739,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
             m_Wrapper.m_BattleActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Select.started += instance.OnSelect;
-                @Select.performed += instance.OnSelect;
-                @Select.canceled += instance.OnSelect;
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
                 @AttackLight.started += instance.OnAttackLight;
                 @AttackLight.performed += instance.OnAttackLight;
                 @AttackLight.canceled += instance.OnAttackLight;
@@ -775,7 +775,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     }
     public interface IBattleActions
     {
-        void OnSelect(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
         void OnAttackLight(InputAction.CallbackContext context);
         void OnAttackHard(InputAction.CallbackContext context);
         void OnAttackSpecial(InputAction.CallbackContext context);
