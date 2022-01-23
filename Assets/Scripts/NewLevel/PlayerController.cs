@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     bool bAllowJump, bAllowMove, bIsDashing, bStartHealing, bAllowOpenChest;//, bMenuOpen;
     float TimeForBattle, ActualTFB;
     public GameObject MainMenu, GoldText, HealthText, ManaText, Inventory, BagPanel, EquipPanel, StatsLeftPnl, StatsRightPnl, ChestPanel;
+    public Camera mainCamera;
     public static List<GameObject> menuButtons;
     public static int SelectedButton = 0;
     public RoomType roomType;
@@ -132,19 +133,23 @@ public class PlayerController : MonoBehaviour
             PlayerData.MapLocX = gameObject.transform.position.x;
             PlayerData.MapLocY = gameObject.transform.position.z;
             direction = new Vector3(moveX, 0f, moveY).normalized;
-
+            
             rb.velocity = new Vector3(moveX * Velocity, rb.velocity.y, moveY * Velocity);
             debugText.text = "PosX: " + PlayerData.MapLocX.ToString() + " :: PosY: " + PlayerData.MapLocY.ToString() + " :: MaxTime: " + TimeForBattle.ToString() + " :: CurrentTime: " + ActualTFB.ToString();
             if(rb.velocity.magnitude > 0)
             {
-                ActualTFB += Time.deltaTime;
-                if(ActualTFB > TimeForBattle)
-                {                    //LoadBattle
-                    
-                    TimeForBattle = UnityEngine.Random.Range(15f, 40f);
-                    ActualTFB = 0f;
-                    PlayerData.parentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-                    UnityEngine.SceneManagement.SceneManager.LoadScene("battle");
+                var tg = mainCamera.GetComponent<TerrainGenerator>();
+                if (tg.tileType != RoomType.None)
+                {
+                    ActualTFB += Time.deltaTime;
+                    if (ActualTFB > TimeForBattle)
+                    {                    //LoadBattle
+
+                        TimeForBattle = UnityEngine.Random.Range(15f, 40f);
+                        ActualTFB = 0f;
+                        PlayerData.parentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                        UnityEngine.SceneManagement.SceneManager.LoadScene("battle");
+                    }
                 }
             }
 

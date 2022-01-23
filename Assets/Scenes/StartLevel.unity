@@ -2992,6 +2992,7 @@ MonoBehaviour:
   StatsLeftPnl: {fileID: 48608853}
   StatsRightPnl: {fileID: 589055773}
   ChestPanel: {fileID: 856252849}
+  mainCamera: {fileID: 151338201}
   roomType: 0
 --- !u!54 &635827556
 Rigidbody:

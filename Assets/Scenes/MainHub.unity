@@ -3137,8 +3137,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 641855274}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: -6, z: 0}
-  m_LocalScale: {x: 100, y: 1, z: 100}
+  m_LocalPosition: {x: 52.6, y: -6, z: 0}
+  m_LocalScale: {x: 140, y: 1, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -3508,6 +3508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Velocity: 10
   JumpForce: 50
+  ManaForBreak: 0
   debugText: {fileID: 1830866936}
   MainMenu: {fileID: 231159871}
   GoldText: {fileID: 371626113}
@@ -3518,6 +3519,8 @@ MonoBehaviour:
   EquipPanel: {fileID: 86190790}
   StatsLeftPnl: {fileID: 853959107}
   StatsRightPnl: {fileID: 513478474}
+  ChestPanel: {fileID: 0}
+  mainCamera: {fileID: 2056757243}
   roomType: 11
 --- !u!136 &755760184
 CapsuleCollider:
@@ -6050,8 +6053,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1150446269}
   m_LocalRotation: {x: 0, y: 0, z: -0.21643952, w: 0.97629607}
-  m_LocalPosition: {x: 21.8, y: -2.5, z: 0}
-  m_LocalScale: {x: 14.4, y: 1, z: 3}
+  m_LocalPosition: {x: 22.539145, y: -2.8341, z: 0}
+  m_LocalScale: {x: 16, y: 1, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -10167,20 +10170,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2056757239}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c21a50267294c2c4185a3891506cf607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   LevelWidth: 15
   LevelHeight: 15
-  LoadingScr: {fileID: 0}
-  Pannel: {fileID: 0}
+  LoadingScr: {fileID: 229726873}
+  Pannel: {fileID: 381163034}
   mapCamera: {fileID: 819845852}
   Level: {fileID: 0}
   player: {fileID: 755760181}
   Light: {fileID: 0}
-  tileType: 0
+  tileType: 11
 --- !u!81 &2056757242
 AudioListener:
   m_ObjectHideFlags: 0
